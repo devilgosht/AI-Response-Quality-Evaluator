@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What is Artificial Intelligence?",
+    "answer": "Artificial Intelligence is the simulation of human intelligence by machines."
+  },
+  {
+    "question": "What is Machine Learning?",
+    "answer": "Machine Learning is a subset of Artificial Intelligence that enables systems to learn from data."
+  },
+  {
+    "question": "What is Retrieval-Augmented Generation?",
+    "answer": "RAG combines information retrieval with language generation to improve factual accuracy."
+  },
+  {
+    "question": "What is Hallucination in AI?",
+    "answer": "Hallucination is when an AI model generates incorrect or fabricated information."
+  },
+  {
+    "question": "What is a Vector Database?",
+    "answer": "A vector database stores embeddings for efficient semantic search."
+  }
+]

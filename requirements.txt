@@ -1,0 +1,9 @@
+streamlit
+langchain
+sentence-transformers
+faiss-cpu
+datasets
+transformers
+pandas
+numpy
+pypdf
