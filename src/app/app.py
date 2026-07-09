@@ -2,83 +2,54 @@ import streamlit as st
 import os
 import sys
 
-# Add src folder to Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-st.set_page_config(
-    page_title="AI Response Quality Evaluator",
-    page_icon="🤖",
-    layout="wide"
-)
+from agents.accuracy_agent import evaluate_accuracy
+from agents.relevance_agent import evaluate_relevance
+from agents.completeness_agent import evaluate_completeness
+from agents.hallucination_agent import detect_hallucination
+from agents.verdict_agent import generate_verdict
+
+st.set_page_config(page_title="AI Response Quality Evaluator", page_icon="🤖")
 
 st.title("🤖 AI Response Quality Evaluator")
-st.write(
-    "Evaluate AI-generated responses using Accuracy, Relevance, Completeness and Hallucination Detection."
-)
 
-st.divider()
+question = st.text_area("Question")
 
-st.subheader("📝 Evaluation Input")
+ai_response = st.text_area("AI Response")
 
-question = st.text_area(
-    "Question",
-    placeholder="Enter your question..."
-)
-
-ai_response = st.text_area(
-    "AI Response",
-    placeholder="Paste the AI response..."
-)
-
-reference = st.text_area(
-    "Reference Answer (Optional)"
-)
-
-uploaded_file = st.file_uploader(
-    "Upload Source Document",
-    type=["pdf", "txt", "docx"]
-)
-
-st.divider()
-
-st.subheader("📊 Evaluation")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.metric("Accuracy", "Pending")
-    st.metric("Relevance", "Pending")
-
-with col2:
-    st.metric("Completeness", "Pending")
-    st.metric("Hallucination", "Pending")
-
-st.metric("Overall Score", "Pending")
+reference = st.text_area("Reference Answer (Optional)")
 
 st.divider()
 
 if st.button("🚀 Evaluate Response"):
 
-    st.success("Evaluation Started!")
+    accuracy = evaluate_accuracy(ai_response, reference)
+    relevance = evaluate_relevance(question, ai_response)
+    completeness = evaluate_completeness(ai_response, reference)
+    hallucination = detect_hallucination(ai_response, reference)
 
-    st.write("### Submitted Data")
+    overall_score, verdict = generate_verdict(
+        accuracy,
+        relevance,
+        completeness,
+        hallucination
+    )
 
-    st.write("**Question:**")
-    st.write(question)
+    st.success("Evaluation Completed!")
 
-    st.write("**AI Response:**")
-    st.write(ai_response)
+    col1, col2 = st.columns(2)
 
-    if reference:
-        st.write("**Reference Answer:**")
-        st.write(reference)
+    with col1:
+        st.metric("Accuracy", f"{accuracy}%")
+        st.metric("Relevance", f"{relevance}%")
 
-    if uploaded_file:
-        st.write(f"Uploaded File: {uploaded_file.name}")
+    with col2:
+        st.metric("Completeness", f"{completeness}%")
+        st.metric("Hallucination", hallucination)
 
-    st.info("Knowledge Base : Ready")
-    st.info("Chunking : Ready")
-    st.info("Embeddings : Ready")
-    st.info("Vector Store : Ready")
+    st.metric("Overall Score", f"{overall_score}%")
 
-    st.success("Prototype Working Successfully!")
+    st.subheader("Verdict")
+
+    st.success(verdict)
