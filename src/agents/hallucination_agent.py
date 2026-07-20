@@ -1,14 +1,13 @@
 from difflib import SequenceMatcher
 
-
 def detect_hallucination(ai_response, reference_answer):
-    """
-    Estimate hallucination risk by comparing
-    the AI response with the reference answer.
-    """
 
     if not reference_answer.strip():
-        return "Cannot Verify"
+        return {
+            "risk": "Cannot Verify",
+            "reason": "Reference answer unavailable.",
+            "unsupported_claims": []
+        }
 
     similarity = SequenceMatcher(
         None,
@@ -17,19 +16,37 @@ def detect_hallucination(ai_response, reference_answer):
     ).ratio()
 
     if similarity >= 0.90:
-        return "Low"
+        return {
+            "risk": "Low",
+            "reason": "No unsupported claims detected.",
+            "unsupported_claims": []
+        }
 
     elif similarity >= 0.60:
-        return "Medium"
+        return {
+            "risk": "Medium",
+            "reason": "Some statements require verification.",
+            "unsupported_claims": [
+                "Possible unsupported statement detected."
+            ]
+        }
 
     else:
-        return "High"
+        return {
+            "risk": "High",
+            "reason": "Multiple unsupported statements detected.",
+            "unsupported_claims": [
+                ai_response
+            ]
+        }
 
 
 if __name__ == "__main__":
 
-    ai = "Artificial Intelligence is the simulation of human intelligence by machines."
+    ai_response = "Artificial Intelligence is the simulation of human intelligence by machines."
 
     reference = "Artificial Intelligence is the simulation of human intelligence by machines."
 
-    print("Hallucination Risk:", detect_hallucination(ai, reference))
+    result = detect_hallucination(ai_response, reference)
+
+    print(result)

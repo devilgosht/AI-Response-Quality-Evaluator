@@ -1,14 +1,12 @@
 from difflib import SequenceMatcher
 
-
 def evaluate_accuracy(ai_response, reference_answer):
-    """
-    Compare AI response with the reference answer
-    and return an accuracy percentage.
-    """
-
     if not reference_answer.strip():
-        return 0
+        return {
+            "score": 0,
+            "reason": "No reference answer provided.",
+            "evidence": "Reference answer unavailable."
+        }
 
     similarity = SequenceMatcher(
         None,
@@ -16,13 +14,19 @@ def evaluate_accuracy(ai_response, reference_answer):
         reference_answer.lower()
     ).ratio()
 
-    return round(similarity * 100, 2)
+    score = round(similarity * 100, 2)
 
+    if score >= 90:
+        reason = "The AI response is highly consistent with the reference answer."
+    elif score >= 70:
+        reason = "The AI response is mostly correct with minor differences."
+    elif score >= 50:
+        reason = "The AI response is partially correct."
+    else:
+        reason = "The AI response differs significantly from the reference."
 
-if __name__ == "__main__":
-
-    ai = "Artificial Intelligence is the simulation of human intelligence by machines."
-
-    reference = "Artificial Intelligence is the simulation of human intelligence by machines."
-
-    print("Accuracy:", evaluate_accuracy(ai, reference), "%")
+    return {
+        "score": score,
+        "reason": reason,
+        "evidence": reference_answer
+    }

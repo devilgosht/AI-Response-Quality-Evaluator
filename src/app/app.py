@@ -38,18 +38,35 @@ if st.button("🚀 Evaluate Response"):
 
     st.success("Evaluation Completed!")
 
-    col1, col2 = st.columns(2)
+    st.subheader("📊 Accuracy")
+    st.metric("Score", f'{accuracy["score"]}%')
+    st.write("Reason:", accuracy["reason"])
+    st.write("Evidence:", accuracy["evidence"])
 
-    with col1:
-        st.metric("Accuracy", f"{accuracy}%")
-        st.metric("Relevance", f"{relevance}%")
+    st.divider()
 
-    with col2:
-        st.metric("Completeness", f"{completeness}%")
-        st.metric("Hallucination", hallucination)
+    st.subheader("📊 Relevance")
+    st.metric("Score", f'{relevance["score"]}%')
+    st.write("Reason:", relevance["reason"])
 
+    st.divider()
+
+    st.subheader("📊 Completeness")
+    st.metric("Score", f"{completeness}%")
+
+    st.divider()
+
+    st.subheader("📊 Hallucination")
+    st.metric("Risk", hallucination["risk"])
+    st.write("Reason:", hallucination["reason"])
+
+    if hallucination["unsupported_claims"]:
+        st.write("Unsupported Claims:")
+        for claim in hallucination["unsupported_claims"]:
+            st.write("-", claim)
+
+    st.divider()
+
+    st.subheader("🏁 Final Verdict")
     st.metric("Overall Score", f"{overall_score}%")
-
-    st.subheader("Verdict")
-
     st.success(verdict)

@@ -1,26 +1,38 @@
+import string
+
 def evaluate_relevance(question, ai_response):
-    """
-    Check how many keywords from the question
-    appear in the AI response.
-    """
 
-    question_words = set(question.lower().split())
-    response_words = set(ai_response.lower().split())
+    translator = str.maketrans('', '', string.punctuation)
 
-    common_words = question_words.intersection(response_words)
+    question = question.lower().translate(translator)
+    ai_response = ai_response.lower().translate(translator)
+
+    question_words = set(question.split())
+    response_words = set(ai_response.split())
+
+    common = question_words.intersection(response_words)
 
     if len(question_words) == 0:
-        return 0
+        return {
+            "score": 0,
+            "reason": "Question is empty."
+        }
 
-    score = (len(common_words) / len(question_words)) * 100
+    score = round(
+        (len(common) / len(question_words)) * 100,
+        2
+    )
 
-    return round(score, 2)
+    if score >= 80:
+        reason = "The response covers most important concepts."
 
+    elif score >= 50:
+        reason = "The response partially answers the question."
 
-if __name__ == "__main__":
+    else:
+        reason = "The response is weakly related to the question."
 
-    question = "What is Artificial Intelligence?"
-
-    ai_response = "Artificial Intelligence is the simulation of human intelligence by machines."
-
-    print("Relevance:", evaluate_relevance(question, ai_response), "%")
+    return {
+        "score": score,
+        "reason": reason
+    }
